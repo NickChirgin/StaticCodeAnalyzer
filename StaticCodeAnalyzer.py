@@ -1,6 +1,8 @@
 import re
 import sys
 import os
+import string
+
 
 def indentation_check(text):
     indent = 0
@@ -9,6 +11,30 @@ def indentation_check(text):
             indent += 1
         else:
             return indent % 4 == 0
+
+
+def spaces(text):
+    if 'def' in text:
+        new_text = text.lstrip().replace('def', '')
+        if len(new_text) - len(new_text.lstrip()) > 1:
+            return True
+    elif 'class' in text:
+        new_text = text.replace(r'class', '')
+        if len(new_text) - len(new_text.lstrip()) > 1:
+            return True
+    return False
+
+
+def camel_case(text):
+    if 'class' in text and text.lower() == text:
+        return True
+    return False
+
+
+def snake_case(text):
+    if 'def' in text and text.lower() != text:
+        return True
+    return False
 
 
 def semicolon_check(text):
@@ -64,6 +90,12 @@ def error_checker(file):
             if blank_line > 2:
                 print(f"{file}: Line {i + 1}: S006 More than two blank lines preceding a code line")
             blank_line = 0
+        if spaces(line):
+            print(f"{file}: Line {i + 1}: S007 Too many spaces after construction_name (def or class)")
+        if camel_case(line):
+            print(f"{file}: Line {i + 1}: S008 Class name class_name should be written in CamelCase")
+        if snake_case(line):
+            print(f"{file}: Line {i + 1}: S009 Function name function_name should be written in snake_case")
 
 
 basepath = sys.argv[1]
